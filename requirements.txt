@@ -7,3 +7,7 @@ python-dotenv
 pre-commit
 unidecode
 requests
+re
+youtube_transcript_api
+pytube
+docx
