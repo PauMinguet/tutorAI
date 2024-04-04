@@ -42,15 +42,11 @@ def searchVectorDB(text):
                                                 """)).fetchall()
         
         formatted_text = ""
-        count=1
         for result in results:
-            formatted_text += f'Source number {count}: \n'
-            formatted_text += f'Text: {result[0]}\n'
-            formatted_text += f'Source: {result[1]}\n'
-            formatted_text += f'Link: {result[2]}\n'
-            formatted_text += f'Name: {result[3]}\n'
-            formatted_text += f'Author: {result[4]}\n\n'
-            count+=1
+            formatted_text += f'''Author: {result[4]}, 
+            Name: {result[3]}, 
+            Type of Source: {result[1]}, 
+            Text: {result[0]}\n\n\n'''
 
 
         return formatted_text

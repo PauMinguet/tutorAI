@@ -1,0 +1,25 @@
+from langchain.text_splitter import SemanticTextSplitter
+from langchain.embeddings import HuggingFaceEmbeddings
+
+# Load the long text
+with open("sleep.txt", "r") as f:
+    long_text = f.read()
+
+# Create an instance of the HuggingFaceEmbeddings
+embeddings = HuggingFaceEmbeddings()
+
+# Initialize the SemanticTextSplitter
+text_splitter = SemanticTextSplitter(
+    chunk_size=100,
+    chunk_overlap=20,
+    length_function=len,
+    embeddings=embeddings,
+)
+
+# Split the text into chunks
+chunks = text_splitter.split_text(long_text)
+
+# Process the chunks
+for chunk in chunks:
+    print(chunk)
+    print("---")

@@ -24,14 +24,13 @@ def query(query):
 
     context = searchVectorDB.searchVectorDB(query)
 
-    print(context)
+    #print(context)
 
-
-    with client.messages.stream(
+    message = client.messages.create(
         model="claude-3-haiku-20240307",
         max_tokens=500,
         temperature=0,
-        system="You are a private tutor, called tutorAI, and your goal is to use the sources provided (pieces of textbook, slides, youtube video transcripts, etc), to answer the question best. Feel free to quote them and cite them, and, if necessary, refer the student to the source for additional information.",
+        system="You are a private tutor, called tutorAI, and your goal is to use the sources provided (pieces of textbook, slides, youtube video transcripts, etc), to answer the question best. Feel free to quote them and cite them by their author or name, and, if necessary, refer the student to the source for additional information.",
         messages=[
             {
                 "role": "user",
@@ -43,9 +42,12 @@ def query(query):
                 ]
             }
         ]
-    ) as stream:
-        for text in stream.text_stream:
-            print(text, end="", flush=True)
-    print("RESPONSE:")
-    print(text)
-    return stream.text_stream
+    )
+
+    print(message)
+    m = message.content
+    res = m[0]
+    print(res)
+
+
+    return message.content[0].text
