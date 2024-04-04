@@ -11,4 +11,3 @@ youtube_transcript_api
 pytube
 docx
 PyPDF2
-unicodedata
