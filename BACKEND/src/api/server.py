@@ -1,4 +1,4 @@
-from fastapi import FastAPI, exceptions
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from src.api import searchVectorDB, insert, claude
@@ -28,7 +28,6 @@ app.include_router(searchVectorDB.router)
 app.include_router(claude.router)
 
 
-@app.exception_handler(exceptions.RequestValidationError)
 @app.exception_handler(ValidationError)
 async def validation_exception_handler(request, exc):
     logging.error(f"The client sent invalid data!: {exc}")
