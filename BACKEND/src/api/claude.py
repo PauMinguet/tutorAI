@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 import requests
 from fastapi import APIRouter, Depends
 from src.api import searchVectorDB
+from src import database as db
+import sqlalchemy
+
 #from src.api import auth
 
 router = APIRouter(
@@ -25,8 +28,6 @@ def query(query):
     print(os.getenv("ANTHROPIC_API_KEY"))
     context = searchVectorDB.searchVectorDB(query)
 
-    #print(context)
-
     message = client.messages.create(
         model="claude-3-haiku-20240307",
         max_tokens=500,
@@ -45,10 +46,9 @@ def query(query):
         ]
     )
 
-    print(message)
-    m = message.content
-    res = m[0]
-    print(res)
 
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text("insert into queries (query, context, answer) values (:query, :context, :answer);")
+            , {"query": query, "context": context, "answer": message.content[0].text})
 
     return message.content[0].text
