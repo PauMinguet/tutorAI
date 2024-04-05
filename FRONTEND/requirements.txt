@@ -1,3 +1,2 @@
-io
 PyPDF2
 requests
