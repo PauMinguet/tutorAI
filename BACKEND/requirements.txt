@@ -3,6 +3,7 @@ pytest
 uvicorn
 sqlalchemy
 psycopg2-binary
+anthropic
 python-dotenv
 pre-commit
 unidecode
