@@ -12,8 +12,7 @@ import requests
 import re
 import youtube_transcript_api
 from pytube import YouTube
-from docx import Document
-
+#from docx import Document
 
 router = APIRouter(
     prefix="/insert",
@@ -79,7 +78,13 @@ def update_times(input: InputFile):
     name = input.name
 
     current_path = os.getcwd()
-    filepath = current_path + f"/assets/{filename}"
+    print(current_path)
+    filepath = current_path + f"\\assets\\{filename}"
+
+    filepath = f"/assets/{filename}"
+
+
+    filepath = filepath.replace("\\", "/")
 
     if filename.endswith('.pdf'):
         pdf_file = open(filepath, 'rb')
@@ -111,6 +116,7 @@ class InputDOCX(BaseModel):
     filename: str
     name: str
 
+'''
 @router.post("/DOCX")
 def update_times(input: InputDOCX):
     filename = input.filename
@@ -144,7 +150,7 @@ def update_times(input: InputDOCX):
 
     return "PDF parsed and saved to database"
 
-
+'''
 
 
 
