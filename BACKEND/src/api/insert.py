@@ -159,12 +159,14 @@ class InputText(BaseModel):
     name: str
     text: str
     source: str
+    author: str = 'NULL'
 
 @router.post("/text")
 def update_times(input: InputText):
     name = input.name
     text = input.text
     source = input.source
+    author = input.author
     
     chunks = break_into_chunks(text)
 
@@ -173,9 +175,13 @@ def update_times(input: InputText):
     for i in range(len(chunks)):
         print(len(chunks[i]))
 
-    insertChunks(chunks, source=source, name=name)
+    print("Inserting chunks:")
+    for i in range(0, len(chunks), 100):
 
-    return "Text parsed and saved to database"
+        insertChunks(chunks[i:i+100], source="PDF", name=name, author=author, link='NULL')
+        print(str(i) + " - " + str(i+100))
+
+    return "PDF parsed and saved to database"
 
 
 
@@ -229,28 +235,20 @@ def get_video_title(video_url):
 
 def break_into_chunks(text, max_words=200, overlap=30):
 
-    # Split the text into words
     words = re.findall(r'\w+', text)
-    
     chunks = []
     current_chunk = []
     
     for i, word in enumerate(words):
-        # If adding the current word to the current chunk would exceed the max word limit,
-        # add the current chunk to the list of chunks and start a new chunk
         if len(current_chunk) + 1 > max_words:
             chunks.append(' '.join(current_chunk[:-overlap]))
             current_chunk = current_chunk[-overlap:]
         
-        # Add the current word to the current chunk
         current_chunk.append(word)
     
-    # Add the last chunk to the list of chunks
     if current_chunk:
         chunks.append(' '.join(current_chunk))
-    
     chunks = [chunk for chunk in chunks if len(chunk) > 80]
-
     return chunks
 
 

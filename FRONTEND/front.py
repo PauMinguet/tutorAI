@@ -26,8 +26,8 @@ def upload_page():
     source_options = ["Textbook", "Book", "Slideshow", "Journal Article", "Research Paper"]
     source = st.selectbox("Resource", source_options)
     
-    startpage = st.text_input("Start Page")
-    endpage = st.text_input("End Page")
+    startpage = int(st.text_input("Start Page", '0'))
+    endpage = int(st.text_input("End Page", '10000000'))
 
     uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
 
@@ -51,6 +51,7 @@ def upload_page():
             print(text)
                 
             url = "https://tutorai-k0k2.onrender.com/insert/text"
+            url = "http://127.0.0.1:3000/insert/text"
 
             # Define the request payload
             payload = {
@@ -99,9 +100,8 @@ def query_page():
             output_text = f"Error: {e}"
 
         # Output text box
-        output_height = max(100, len(output_text.split('\n')) * 20)
 
-        st.text_area("Output", value=output_text, height=output_height)
+        st.text_area("Output", value=output_text, height=800)
 
 def settings_page():
     st.title("Settings Page")
