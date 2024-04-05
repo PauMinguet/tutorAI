@@ -1,54 +1,12 @@
+import io
+import PyPDF2
 import streamlit as st
 import requests
-import fileToText
-import base64
 
-
-
-
+# Add a new state variable to keep track of the current page
 
 def main():
-    pages = ["Home", "Login", "SignUp"]
-
-    st.sidebar.title("Navigation")
-    choice = st.sidebar.selectbox("Menu", pages)
-
-    if choice == "Home":
-        st.subheader("Home")
-
-    elif choice == "Login":
-        st.subheader("Login Section")
-        username = st.sidebar.text_input("User Name")
-        password = st.sidebar.text_input("Password", type='password')
-        if st.sidebar.checkbox("Login"):
-            if password == "12345":  # Dummy password check
-                st.success("Logged In as {}".format(username))
-                home()
-
-    elif choice == "Login":
-        st.subheader("Login Section")
-        user = st.text_input("Username")
-        password = st.text_input("Password", type='password')
-
-        if st.sidebar.button("Login"):
-            if password == "12345":  # Dummy password check
-                st.success("Logged In as {}".format(username))
-                home()
-
-
-    elif choice == "SignUp":
-        st.subheader("Create New Account")
-        new_user = st.text_input("Username")
-        new_password = st.text_input("Password", type='password')
-
-        if st.button("Signup"):
-            st.success("You have successfully created an account")
-            st.info("Go to Login Menu to login")
-
-
-
-
-
+    home()
 
 
 
@@ -57,40 +15,62 @@ def landing_page():
     st.title("tutorAI")
     st.write("This is the landing page.")
 
-
-
 def upload_page():
-    st.title("Upload Page")
-    uploaded_file = st.file_uploader("Choose a file")
-    if uploaded_file is not None:
-        st.write("File uploaded successfully!")
+    st.title("Upload PDF")
 
-        # Read the file
-        file_content = uploaded_file.read()
+    # Add text inputs for Name and Author
+    name = st.text_input("Name")
+    author = st.text_input("Author")
 
-        # Convert the file content to base64
-        file_content_base64 = base64.b64encode(file_content).decode()
+    # Add a dropdown for Source
+    source_options = ["Textbook", "Book", "Slideshow", "Journal Article", "Research Paper"]
+    source = st.selectbox("Resource", source_options)
+    
+    startpage = st.text_input("Start Page")
+    endpage = st.text_input("End Page")
 
-        # Define the API endpoint
-        url = "https://tutorai-k0k2.onrender.com/insert/text"
+    uploaded_file = st.file_uploader("Choose a file", accept_multiple_files=False)
 
-        # Define the request payload
-        payload = {
-            "name": "TEST",
-            "text": file_content_base64,
-            "source": "TEST"
-        }
+    if st.button("Upload"):
+            
+            # Check if the uploaded file is a PDF
+        if uploaded_file.name.endswith('.pdf'):
+            st.write("File uploaded successfully!")
 
-        # Send a POST request to the API
-        response = requests.post(url, json=payload)
+            # Read the file
+            pdf_file = uploaded_file.read()
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_file))
+            num_pages = len(pdf_reader.pages)
+            text = ''
 
-        # Handle the response
-        if response.status_code == 200:
-            st.write("API call was successful!")
+            # Extract text from the PDF
+            for page_num in range(startpage, endpage if endpage < num_pages else num_pages):
+                page = pdf_reader.pages[page_num]
+                text += page.extract_text()
+                
+            print(text)
+                
+            url = "https://tutorai-k0k2.onrender.com/insert/text"
+
+            # Define the request payload
+            payload = {
+                "name": name,
+                "text": text,
+                "source": source,
+                "author": author
+            }
+
+            # Send a POST request to the API
+            response = requests.post(url, json=payload)
+
+                # Handle the response
+            if response.status_code == 200:
+                st.write("Inserted successfully!")
+            else:
+                st.write("Something went wrong :( Please try again.")
         else:
-            st.write("API call failed.")
-
-
+            st.write("Invalid file format. Please upload a PDF file.")
+            
 
 def query_page():
     st.title("Query Page")
