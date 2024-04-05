@@ -17,11 +17,15 @@ def query_page():
     st.title("Query Page")
 
     # Input text box
-    input_text = st.text_input("Enter some text:")
+    input_height = 100
+    input_text = st.text_area("Enter some text:", height=input_height)
+    input_height = max(100, len(input_text.split('\n')) * 20)
+
 
     # Send button
     if st.button("Send"):
         try:
+            
             # Make an API call
             api_url = f"http://127.0.0.1:3000/query/{input_text}"
             print(api_url)
@@ -36,7 +40,9 @@ def query_page():
             output_text = f"Error: {e}"
 
         # Output text box
-        st.text_area("Output", value=output_text, height=600)
+        output_height = max(100, len(output_text.split('\n')) * 20)
+
+        st.text_area("Output", value=output_text, height=output_height)
 
 def settings_page():
     st.title("Settings Page")
