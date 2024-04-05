@@ -51,7 +51,6 @@ def upload_page():
             print(text)
                 
             url = "https://tutorai-k0k2.onrender.com/insert/text"
-            url = "http://127.0.0.1:3000/insert/text"
 
             # Define the request payload
             payload = {
