@@ -27,7 +27,7 @@ def query_page():
         try:
             
             # Make an API call
-            api_url = f"http://127.0.0.1:3000/query/{input_text}"
+            api_url = f"https://tutorai-k0k2.onrender.com/query/{input_text}"
             print(api_url)
             #payload = {"query": input_text}
             response = requests.get(api_url)
