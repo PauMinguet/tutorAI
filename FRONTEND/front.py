@@ -8,8 +8,6 @@ import requests
 def main():
     home()
 
-
-
 # Define the pages
 def landing_page():
     st.title("tutorAI")
@@ -24,7 +22,7 @@ def upload_page():
     author = st.text_input("Author")
 
     # Add a dropdown for Source
-    source_options = ["Textbook", "Book", "Slideshow", "Journal Article", "Research Paper"]
+    source_options = ["Textbook", "Book", "Slideshow", "Journal Article", "Research Paper", "Other"]
     source = st.selectbox("Resource", source_options)
     
     startpage = int(st.text_input("Start Page", '0'))
@@ -48,9 +46,9 @@ def upload_page():
             for page_num in range(startpage, endpage if endpage < num_pages else num_pages):
                 page = pdf_reader.pages[page_num]
                 text += page.extract_text()
-                
+
             print(text)
-                
+
             url = "https://tutorai-k0k2.onrender.com/insert/text"
 
             # Define the request payload
@@ -80,7 +78,6 @@ def query_page():
     input_height = 100
     input_text = st.text_area("Enter some text:", height=input_height)
     input_height = max(100, len(input_text.split('\n')) * 20)
-
 
     # Send button
     if st.button("Send"):
