@@ -1,4 +1,5 @@
 import io
+import pandas as pd
 import PyPDF2
 import streamlit as st
 import requests
@@ -196,17 +197,15 @@ def view_documents_page():
 
     response = requests.get(url)
     data = response.json()
-
-    # Create a table header
-    st.write("| Name | Source | Author | Link |")
-    st.write("| --- | --- | --- | --- |")
-
-    # Display each row as a table row
-    for result in data["results"]:
-        st.write(f"| {result['name']} | {result['source']} | {result['author']} | {result['link']} |")
-
+    
+    # Create a DataFrame from the data
+    df = pd.DataFrame(data["results"])
+    
+    # Display the DataFrame as a table
+    st.table(df)
+    
     # Display a delete button for each row
-    for i in range(len(data["results"])):
+    for i in range(len(df)):
         if st.button(f"Delete {i}"):
             st.write(f"You clicked delete for item {i}")
             # Add your deletion logic here
