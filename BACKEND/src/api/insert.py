@@ -54,12 +54,12 @@ def update_times(input: Input):
 
     chunks = break_into_chunks(text)
 
-    print(len(chunks))
+    #print(len(chunks))
 
-    for i in range(len(chunks)):
-        print(len(chunks[i]))
+    #for i in range(len(chunks)):
+        #print(len(chunks[i]))
 
-    insertChunks(chunks, "YT", author=channel, name=title, link=example_url, source=input.source)
+    insertChunks(chunks, author=channel, name=title, link=example_url, source=input.source)
 
     return "YouTube video transcript parsed and saved to database"
 
@@ -79,7 +79,7 @@ def update_times(input: InputFile):
     name = input.name
 
     current_path = os.getcwd()
-    print(current_path)
+    #print(current_path)
     filepath = current_path + f"\\assets\\{filename}"
 
     filepath = f"/assets/{filename}"
@@ -117,44 +117,6 @@ class InputDOCX(BaseModel):
     filename: str
     name: str
 
-'''
-@router.post("/DOCX")
-def update_times(input: InputDOCX):
-    filename = input.filename
-    name = input.name
-
-    current_path = os.getcwd()
-    filepath = current_path + f"/assets/{filename}"
-
-    try:
-        doc = Document(filepath)
-        text = []
-        for paragraph in doc.paragraphs:
-            text.append(paragraph.text)
-        text = '\n'.join(text)
-    except Exception as e:
-        print("Error:", e)
-        return None
-
-    text = preprocess_book(text)
-
-    chunks = []
-    for i in text:
-        chunks.append(break_into_chunks(i))
-
-
-    print("Inserting chunks:")
-    for i in range(0, len(chunks), 100):
-
-        insertChunks(chunks[i:i+100], source="PDF", name=name, link=filename)
-        print(str(i) + " - " + str(i+100))
-
-    return "PDF parsed and saved to database"
-
-'''
-
-
-
 
 class InputText(BaseModel):
     name: str
@@ -171,10 +133,10 @@ def update_times(input: InputText):
     
     chunks = break_into_chunks(text)
 
-    print(len(chunks))
+    #print(len(chunks))
 
-    for i in range(len(chunks)):
-        print(len(chunks[i]))
+    #for i in range(len(chunks)):
+        #print(len(chunks[i]))
 
     print("Inserting chunks:")
     for i in range(0, len(chunks), 100):
