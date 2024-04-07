@@ -25,7 +25,6 @@ def query(query):
         api_key=os.getenv("ANTHROPIC_API_KEY")
         
     )
-    print(os.getenv("ANTHROPIC_API_KEY"))
     context = searchVectorDB.searchVectorDB(query)
 
     message = client.messages.create(
