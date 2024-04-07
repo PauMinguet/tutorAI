@@ -104,6 +104,51 @@ def upload_youtube_page():
     st.title("Upload YouTube Video")
     st.write("This is the YouTube upload page.")
     
+    link = st.text_input("YouTube Video Link")
+
+    # Add a dropdown for Source
+    source_options = ["Lecture", "YouTube Video", "AudioBook", "Presentation", "Other"]
+    source = st.selectbox("Type", source_options)
+    
+
+    if st.button("Upload"):
+        
+        # Check if the uploaded file is a PDF
+        
+        url = "https://tutorai-k0k2.onrender.com/insert/YT"
+
+            # Define the request payload
+        payload = {
+            "source": source,
+            "link": link
+        }
+
+            # Send a POST request to the API
+        response = requests.post(url, json=payload)
+
+                # Handle the response
+        if response.status_code == 200:
+            st.write("Inserted successfully!")
+        else:
+            st.write("Something went wrong :( Please try again.")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 def upload_text_page():
     st.title("Upload Text")
     st.write("This is the text upload page.")
@@ -115,13 +160,15 @@ def upload_text_page():
     # Add a dropdown for Source
     source_options = ["Zoom Transcript", "Textbook", "Book", "Slideshow", "Journal Article", "Research Paper", "Other"]
     source = st.selectbox("Resource", source_options)
+    
+    input_height = 300
+    input_text = st.text_area("Enter some text:", height=input_height)
+
 
     if st.button("Upload"):
         
         # Check if the uploaded file is a PDF
-        input_height = 300
-        input_text = st.text_area("Enter some text:", height=input_height)
-
+        
         url = "https://tutorai-k0k2.onrender.com/insert/text"
 
             # Define the request payload
