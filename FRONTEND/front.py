@@ -196,20 +196,20 @@ def view_documents_page():
 
     response = requests.get(url)
     data = response.json()
-    
-    st.write(data)
-    
-    for item in data:
-        st.write(item)
-    
-    if st.button("Refresh"):
-        response = requests.get(url)
-        data = response.json()
-    
-        st.write(data)
-    
-        for item in data:
-            st.write(item)
+
+    # Create a table header
+    st.write("| Name | Source | Author | Link |")
+    st.write("| --- | --- | --- | --- |")
+
+    # Display each row as a table row
+    for result in data["results"]:
+        st.write(f"| {result['name']} | {result['source']} | {result['author']} | {result['link']} |")
+
+    # Display a delete button for each row
+    for i in range(len(data["results"])):
+        if st.button(f"Delete {i}"):
+            st.write(f"You clicked delete for item {i}")
+            # Add your deletion logic here
     
 
 def settings_page():
