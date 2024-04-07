@@ -23,6 +23,7 @@ router = APIRouter(
 
 class Input(BaseModel):
     link: str
+    source: str
 
 @router.post("/YT")
 def update_times(input: Input):
@@ -58,7 +59,7 @@ def update_times(input: Input):
     for i in range(len(chunks)):
         print(len(chunks[i]))
 
-    insertChunks(chunks, "YT", author=channel, name=title, link=example_url)
+    insertChunks(chunks, "YT", author=channel, name=title, link=example_url, source=input.source)
 
     return "YouTube video transcript parsed and saved to database"
 
