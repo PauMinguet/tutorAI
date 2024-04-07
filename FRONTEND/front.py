@@ -135,21 +135,6 @@ def upload_youtube_page():
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 def upload_text_page():
     st.title("Upload Text")
     st.write("This is the text upload page.")
