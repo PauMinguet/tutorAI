@@ -146,7 +146,6 @@ def settings_page():
     st.title("Settings Page")
     st.write("This is the settings page.")
 
-
 def home():
     # Set up the navigation menu
     pages = {
@@ -158,15 +157,26 @@ def home():
         "Settings": settings_page,
     }
 
-    st.sidebar.title("Navigation")
-    selection = st.sidebar.radio("Go to", list(pages.keys()))
+    st.sidebar.title("Navigation", style={'font-size': '24px'})
+    selection = st.sidebar.radio("Go to", list(pages.keys()), format_func=lambda x: f'<span style="font-weight:{"bold" if x == selection else "normal"}">{x}</span>', key='navigation_radio', use_container_width=True)
 
-    # Set the width of the sidebar using CSS
+    # Set the width and padding of the sidebar using CSS
     st.markdown(
         """
         <style>
         [data-baseweb="sidebar"] {
-            width: 200px;
+            width: 250px;
+            padding: 20px;
+        }
+
+        [data-testid="stRadio"] > label {
+            font-size: 18px;
+            display: block;
+            padding: 10px 0;
+        }
+
+        [data-testid="stRadio"] > label > div:first-child {
+            display: none;
         }
         </style>
         """,
