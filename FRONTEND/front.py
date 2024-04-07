@@ -188,6 +188,29 @@ def upload_text_page():
         else:
             st.write("Something went wrong :( Please try again.")
     
+def view_documents_page():
+    st.title("View Documents")
+    st.write("This is the view documents page.")
+    
+    url = "https://tutorai-k0k2.onrender.com/viewDocuments"
+
+    response = requests.get(url)
+    data = response.json()
+    
+    st.write(data)
+    
+    for item in data:
+        st.write(item)
+    
+    if st.button("Refresh"):
+        response = requests.get(url)
+        data = response.json()
+    
+        st.write(data)
+    
+        for item in data:
+            st.write(item)
+    
 
 def settings_page():
     st.title("Settings Page")
@@ -201,6 +224,7 @@ def home():
         "Upload PDF": upload_pdf_page,
         "Upload YouTube Video": upload_youtube_page,
         "Upload Text": upload_text_page,
+        "View Documents": view_documents_page,
         "Query": query_page,
         "Settings": settings_page,
     }
