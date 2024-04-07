@@ -197,18 +197,19 @@ def view_documents_page():
 
     response = requests.get(url)
     data = response.json()
-    
-    # Create a DataFrame from the data
-    df = pd.DataFrame(data["results"])
-    
-    # Display the DataFrame as a table
-    st.table(df)
-    
-    # Display a delete button for each row
-    for i in range(len(df)):
-        if st.button(f"Delete {i}"):
-            st.write(f"You clicked delete for item {i}")
-            # Add your deletion logic here
+
+    # Display each row as a separate column layout with a delete button
+    for i, result in enumerate(data["results"]):
+        col1, col2 = st.beta_columns([4, 1])
+        with col1:
+            st.text(f"Name: {result['name']}")
+            st.text(f"Source: {result['source']}")
+            st.text(f"Author: {result['author']}")
+            st.text(f"Link: {result['link']}")
+        with col2:
+            if st.button(f"Delete {i}"):
+                st.write(f"You clicked delete for item {i}")
+                # Add your deletion logic here
     
 
 def settings_page():
