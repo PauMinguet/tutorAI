@@ -146,6 +146,7 @@ def settings_page():
     st.title("Settings Page")
     st.write("This is the settings page.")
 
+
 def home():
     # Set up the navigation menu
     pages = {
@@ -157,16 +158,15 @@ def home():
         "Settings": settings_page,
     }
 
-    st.sidebar.title("Navigation", style={'font-size': '24px'})  # Increase font size of the title
-    selection = st.sidebar.radio("Go to", list(pages.keys()), style={'font-size': '18px'})  # Increase font size of the radio buttons
+    st.sidebar.title("Navigation")
+    selection = st.sidebar.radio("Go to", list(pages.keys()))
 
-    # Set the width and padding of the sidebar using CSS
+    # Set the width of the sidebar using CSS
     st.markdown(
         """
         <style>
         [data-baseweb="sidebar"] {
-            width: 250px;
-            padding: 20px;
+            width: 200px;
         }
         </style>
         """,
