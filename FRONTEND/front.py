@@ -157,8 +157,8 @@ def home():
         "Settings": settings_page,
     }
 
-    st.sidebar.title("Navigation", style={'font-size': '24px'})
-    selection = st.sidebar.radio("Go to", list(pages.keys()), format_func=lambda x: f'<span style="font-weight:{"bold" if x == selection else "normal"}">{x}</span>', key='navigation_radio', use_container_width=True)
+    st.sidebar.title("Navigation", style={'font-size': '24px'})  # Increase font size of the title
+    selection = st.sidebar.radio("Go to", list(pages.keys()), style={'font-size': '18px'})  # Increase font size of the radio buttons
 
     # Set the width and padding of the sidebar using CSS
     st.markdown(
@@ -167,16 +167,6 @@ def home():
         [data-baseweb="sidebar"] {
             width: 250px;
             padding: 20px;
-        }
-
-        [data-testid="stRadio"] > label {
-            font-size: 18px;
-            display: block;
-            padding: 10px 0;
-        }
-
-        [data-testid="stRadio"] > label > div:first-child {
-            display: none;
         }
         </style>
         """,
