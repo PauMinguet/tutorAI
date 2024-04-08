@@ -26,7 +26,7 @@ class Input(BaseModel):
     source: str
 
 @router.post("/YT")
-def update_times(input: Input):
+def yt(input: Input):
 
     example_url = input.link
     _id = example_url.split("=")[1].split("&")[0]
@@ -72,7 +72,7 @@ class InputFile(BaseModel):
 
 
 @router.post("/PDF")
-def update_times(input: InputFile):
+def pdf(input: InputFile):
     filename = input.filename
     startpage = input.startpage
     endpage = input.endpage
@@ -124,27 +124,46 @@ class InputText(BaseModel):
     source: str
     author: str = 'NULL'
 
+
+
+from fastapi import WebSocket
+from typing import Generator
+
+
 @router.post("/text")
-def update_times(input: InputText):
+async def text(input: InputText, websocket: WebSocket = Depends(get_websocket)):
     name = input.name
     text = input.text
     source = input.source
     author = input.author
-    
     chunks = break_into_chunks(text)
 
-    #print(len(chunks))
+    await websocket.accept()
 
-    #for i in range(len(chunks)):
-        #print(len(chunks[i]))
+    total_chunks = len(chunks)
+    inserted_chunks = 0
 
-    print("Inserting chunks:")
-    for i in range(0, len(chunks), 100):
+    async def insert_chunks() -> Generator[int, None, None]:
+        nonlocal inserted_chunks
+        for i in range(0, len(chunks), 100):
+            try:
+                insertChunks(chunks[i:i+100], source=source, name=name, author=author, link='NULL')
+                inserted_chunks += 100
+                yield inserted_chunks
+            except Exception as e:
+                print(f"Error inserting chunks: {e}")
+                yield -1  # Indicate an error
 
-        insertChunks(chunks[i:i+100], source=source, name=name, author=author, link='NULL')
-        print(str(i) + " - " + str(i+100))
+    async for progress in insert_chunks():
+        if progress == -1:
+            await websocket.send_json({"status": "error", "message": "Error inserting chunks"})
+        else:
+            await websocket.send_json({"status": "progress", "value": progress, "total": total_chunks})
 
-    return "PDF parsed and saved to database"
+    await websocket.send_json({"status": "complete", "message": "PDF parsed and saved to database"})
+    await websocket.close()
+
+    return {"status": "PDF parsed and saved to database"}
 
 
 
@@ -174,9 +193,9 @@ def insertChunks(lst, source, name='NULL', author='NULL', link='NULL'):
                 if text != '':
                     connection.execute(sqlalchemy.text("insert into items (text_value, embedding, source, name, author, link) values (:text, :embedding, :source, :name, :author, :link);")
             , {"text": text, "embedding": embedding, "source": source, "name": name, "author": author, "link": link})
-     
+
         return "Ok"
-    
+
     except DBAPIError as error:
     
         print(f"Error returned: <<<{error}>>>")

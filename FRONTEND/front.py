@@ -218,15 +218,18 @@ def home():
 
     # Set the width of the sidebar using CSS
     st.markdown(
-        """
-        <style>
-        [data-baseweb="sidebar"] {
-            width: 200px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    """
+    <style>
+    [data-baseweb="sidebar"] {
+        width: 200px;
+    }
+    .stTextInput input {
+        width: 800px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
     # Display the selected page
     pages[selection]()
