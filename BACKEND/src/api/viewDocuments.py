@@ -22,7 +22,7 @@ def searchVectorDB():
     
     try:
         with db.engine.begin() as connection:
-            results = connection.execute(sqlalchemy.text("""select distinct name, source, author, link from items""")).fetchall()
+            results = connection.execute(sqlalchemy.text("""select distinct name, source, author, link from items order by name""")).fetchall()
 
         print(results)
         results = [dict(zip(["name", "source", "author", "link"], result)) for result in results]
