@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import searchVectorDB, insert, claude, viewDocuments
+from src.api import searchVectorDB, insert, claude, viewDocuments, classes
 import logging
 from .. import database as db
 import sqlalchemy
@@ -26,6 +26,7 @@ app.include_router(insert.router)
 app.include_router(searchVectorDB.router)
 app.include_router(claude.router)
 app.include_router(viewDocuments.router)
+app.include_router(classes.router)
 
 
 @app.exception_handler(exceptions.RequestValidationError)

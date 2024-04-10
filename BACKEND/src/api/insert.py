@@ -137,7 +137,7 @@ def update_times(input: InputText):
     print("Inserting chunks:")
     for i in range(0, len(chunks), 100):
 
-        insertChunks(chunks[i:i+100], source="PDF", name=name, author=author, link='NULL')
+        insertChunks(chunks[i:i+100], source=source, name=name, author=author, link='NULL')
         print(str(i) + " - " + str(i+100))
 
     return "PDF parsed and saved to database"
