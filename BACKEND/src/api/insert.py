@@ -12,13 +12,12 @@ import requests
 import re
 import youtube_transcript_api
 from pytube import YouTube
-from fastapi import APIRouter, Depends
-from .auth import get_current_user
+#from docx import Document
 
 router = APIRouter(
     prefix="/insert",
     tags=["insert"],
-    dependencies=[Depends(get_current_user)],
+    #dependencies=[Depends(auth.get_api_key)],
 )
 
 
@@ -27,7 +26,7 @@ class Input(BaseModel):
     source: str
 
 @router.post("/YT")
-def yt(input: Input):
+def update_times(input: Input):
 
     example_url = input.link
     _id = example_url.split("=")[1].split("&")[0]
@@ -55,12 +54,12 @@ def yt(input: Input):
 
     chunks = break_into_chunks(text)
 
-    #print(len(chunks))
+    print(len(chunks))
 
-    #for i in range(len(chunks)):
-        #print(len(chunks[i]))
+    for i in range(len(chunks)):
+        print(len(chunks[i]))
 
-    insertChunks(chunks, author=channel, name=title, link=example_url, source=input.source)
+    insertChunks(chunks, "YT", author=channel, name=title, link=example_url, source=input.source)
 
     return "YouTube video transcript parsed and saved to database"
 
@@ -73,14 +72,14 @@ class InputFile(BaseModel):
 
 
 @router.post("/PDF")
-def pdf(input: InputFile):
+def update_times(input: InputFile):
     filename = input.filename
     startpage = input.startpage
     endpage = input.endpage
     name = input.name
 
     current_path = os.getcwd()
-    #print(current_path)
+    print(current_path)
     filepath = current_path + f"\\assets\\{filename}"
 
     filepath = f"/assets/{filename}"
@@ -114,10 +113,6 @@ def pdf(input: InputFile):
     return "PDF parsed and saved to database"
 
 
-class InputDOCX(BaseModel):
-    filename: str
-    name: str
-
 
 class InputText(BaseModel):
     name: str
@@ -125,50 +120,27 @@ class InputText(BaseModel):
     source: str
     author: str = 'NULL'
 
-
-
-from fastapi import WebSocket
-from typing import Generator
-
-
 @router.post("/text")
-async def text(input: InputText, websocket: WebSocket = Depends(get_websocket)):
+def update_times(input: InputText):
     name = input.name
     text = input.text
     source = input.source
     author = input.author
+    
     chunks = break_into_chunks(text)
 
-    await websocket.accept()
+    print(len(chunks))
 
-    total_chunks = len(chunks)
-    inserted_chunks = 0
+    for i in range(len(chunks)):
+        print(len(chunks[i]))
 
-    async def insert_chunks() -> Generator[int, None, None]:
-        nonlocal inserted_chunks
-        for i in range(0, len(chunks), 100):
-            try:
-                insertChunks(chunks[i:i+100], source=source, name=name, author=author, link='NULL')
-                inserted_chunks += 100
-                yield inserted_chunks
-            except Exception as e:
-                print(f"Error inserting chunks: {e}")
-                yield -1  # Indicate an error
+    print("Inserting chunks:")
+    for i in range(0, len(chunks), 100):
 
-    async for progress in insert_chunks():
-        if progress == -1:
-            await websocket.send_json({"status": "error", "message": "Error inserting chunks"})
-        else:
-            await websocket.send_json({"status": "progress", "value": progress, "total": total_chunks})
+        insertChunks(chunks[i:i+100], source="PDF", name=name, author=author, link='NULL')
+        print(str(i) + " - " + str(i+100))
 
-    await websocket.send_json({"status": "complete", "message": "PDF parsed and saved to database"})
-    await websocket.close()
-
-    return {"status": "PDF parsed and saved to database"}
-
-
-
-
+    return "PDF parsed and saved to database"
 
 
 
@@ -194,9 +166,9 @@ def insertChunks(lst, source, name='NULL', author='NULL', link='NULL'):
                 if text != '':
                     connection.execute(sqlalchemy.text("insert into items (text_value, embedding, source, name, author, link) values (:text, :embedding, :source, :name, :author, :link);")
             , {"text": text, "embedding": embedding, "source": source, "name": name, "author": author, "link": link})
-
+     
         return "Ok"
-
+    
     except DBAPIError as error:
     
         print(f"Error returned: <<<{error}>>>")
