@@ -5,6 +5,7 @@ from src.api import searchVectorDB, insert, claude, viewDocuments
 import logging
 from .. import database as db
 import sqlalchemy
+import json
 
 description = """
 ___

@@ -38,7 +38,7 @@ def searchVectorDB(text):
     FROM items 
     WHERE length(text_value) > 100
     ORDER BY embedding <-> '{embedding}'
-    LIMIT 10;
+    LIMIT 20;
                                                 """)).fetchall()
         
         formatted_text = ""

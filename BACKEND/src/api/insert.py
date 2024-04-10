@@ -12,12 +12,13 @@ import requests
 import re
 import youtube_transcript_api
 from pytube import YouTube
-#from docx import Document
+from fastapi import APIRouter, Depends
+from .auth import get_current_user
 
 router = APIRouter(
     prefix="/insert",
     tags=["insert"],
-    #dependencies=[Depends(auth.get_api_key)],
+    dependencies=[Depends(get_current_user)],
 )
 
 
