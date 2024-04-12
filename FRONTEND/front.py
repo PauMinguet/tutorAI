@@ -157,27 +157,9 @@ def upload_text_page():
 
 
     if st.button("Upload"):
+        uploadText(name, author, source, input_text)
         
-        # Check if the uploaded file is a PDF
         
-        url = "https://tutorai-k0k2.onrender.com/insert/text"
-
-            # Define the request payload
-        payload = {
-            "name": name,
-            "text": input_text,
-            "source": source,
-            "author": author
-        }
-
-            # Send a POST request to the API
-        response = requests.post(url, json=payload)
-
-                # Handle the response
-        if response.status_code == 200:
-            st.write("Inserted successfully!")
-        else:
-            st.write("Something went wrong :( Please try again.")
     
 def view_documents_page():
     st.title("View Documents")
@@ -239,5 +221,28 @@ def home():
     # Display the selected page
     pages[selection]()
 
+def uploadText(name, author, source, input_text):
+    url = "https://tutorai-k0k2.onrender.com/insert/text"
+
+            # Define the request payload
+    payload = {
+            "name": name,
+            "text": input_text,
+            "source": source,
+            "author": author
+        }
+
+            # Send a POST request to the API
+    response = requests.post(url, json=payload)
+
+                # Handle the response
+    if response.status_code == 200:
+        st.write("Inserted successfully!")
+    else:
+        st.write("Something went wrong :( Please try again.")
+
+
+
 if __name__ == "__main__":
     main()
+    

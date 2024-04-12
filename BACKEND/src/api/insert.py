@@ -21,6 +21,18 @@ router = APIRouter(
 )
 
 
+
+model_id = "intfloat/e5-small-v2"
+api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_id}"
+headers = {"Authorization": f"Bearer {os.environ.get('HUGGINGFACE_API_TOKEN')}"}
+
+def query(texts):
+        response = requests.post(api_url, headers=headers, json={"inputs": texts, "options":{"wait_for_model":True}})
+        return response.json()
+
+
+
+
 class Input(BaseModel):
     link: str
     source: str
@@ -50,16 +62,8 @@ def update_times(input: Input):
 
     for line in transcript:
         text += line['text'] + " "
-    
 
-    chunks = break_into_chunks(text)
-
-    print(len(chunks))
-
-    for i in range(len(chunks)):
-        print(len(chunks[i]))
-
-    insertChunks(chunks, "YT", author=channel, name=title, link=example_url, source=input.source)
+    insertChunks(text, "YT", author=channel, name=title, link=example_url, source=input.source)
 
     return "YouTube video transcript parsed and saved to database"
 
@@ -100,15 +104,7 @@ def update_times(input: InputFile):
     else:
         return "Invalid file format. Please upload a PDF file."
 
-    chunks = break_into_chunks(text)
-
-    print(len(chunks))
-
-    print("Inserting chunks:")
-    for i in range(0, len(chunks), 100):
-
-        insertChunks(chunks[i:i+100], source="PDF", name=name, link=filename)
-        print(str(i) + " - " + str(i+100))
+    insertChunks(text=text, name=name, link=filename)
 
     return "PDF parsed and saved to database"
 
@@ -120,6 +116,8 @@ class InputText(BaseModel):
     source: str
     author: str = 'NULL'
 
+
+
 @router.post("/text")
 def update_times(input: InputText):
     name = input.name
@@ -127,56 +125,52 @@ def update_times(input: InputText):
     source = input.source
     author = input.author
     
+    insertChunks(text, source=source, name=name, author=author, link='NULL')
+
+    return "Document parsed and saved to database"
+
+
+
+
+
+
+def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
+
     chunks = break_into_chunks(text)
 
-    print(len(chunks))
+    chunks = [chunk for chunk in chunks if len(chunk) > 100]
 
-    for i in range(len(chunks)):
-        print(len(chunks[i]))
-
+    try:
+        with db.engine.begin() as connection:
+            docId = connection.execute(sqlalchemy.text("insert into documents (name, source, author, link, num_chunks) values (:name, :source, :author, :link, :numchunks) returning id;")
+                , {"text": text, "source": source, "name": name, "author": author, "link": link, "numchunks": len(chunks)}).first()[0]
+    except DBAPIError as error:
+        
+        print(f"Error returned: <<<{error}>>>")
+        
+    print("docId: ", docId)
+    print("Number of chunks: ", len(chunks))
+                
     print("Inserting chunks:")
     for i in range(0, len(chunks), 100):
 
-        insertChunks(chunks[i:i+100], source=source, name=name, author=author, link='NULL')
+        chunks = chunks[i:i+100]
         print(str(i) + " - " + str(i+100))
 
-    return "PDF parsed and saved to database"
-
-
-
-
-model_id = "intfloat/e5-small-v2"
-api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_id}"
-headers = {"Authorization": f"Bearer {os.environ.get('HUGGINGFACE_API_TOKEN')}"}
-
-def query(texts):
-        response = requests.post(api_url, headers=headers, json={"inputs": texts, "options":{"wait_for_model":True}})
-        return response.json()
-
-
-def insertChunks(lst, source, name='NULL', author='NULL', link='NULL'):
-
-    lst = [chunk for chunk in lst if len(chunk) > 100]
-
-    embeddings = query(lst)
-    
-    try:
-        with db.engine.begin() as connection:
-            for text, embedding in zip(lst, embeddings):  
-                if text != '':
-                    connection.execute(sqlalchemy.text("insert into items (text_value, embedding, source, name, author, link) values (:text, :embedding, :source, :name, :author, :link);")
-            , {"text": text, "embedding": embedding, "source": source, "name": name, "author": author, "link": link})
-     
-        return "Ok"
-    
-    except DBAPIError as error:
-    
-        print(f"Error returned: <<<{error}>>>")
-
-
-
-
-
+        embeddings = query(chunks)
+        
+        try:
+            with db.engine.begin() as connection:
+                for text, embedding in zip(chunks, embeddings):  
+                    if text != '':
+                        connection.execute(sqlalchemy.text("insert into items (text_value, embedding, doc_id) values (:text, :embedding, :docId);")
+                , {"text": text, "embedding": embedding, "docId": docId})
+        
+            return "Ok"
+        
+        except DBAPIError as error:
+        
+            print(f"Error returned: <<<{error}>>>")
 
 
 def get_video_title(video_url):

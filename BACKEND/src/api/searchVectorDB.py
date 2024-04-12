@@ -34,21 +34,24 @@ def searchVectorDB(text):
     try:
         with db.engine.begin() as connection:
             results = connection.execute(sqlalchemy.text(f"""
-    SELECT text_value, source, link, name, author
-    FROM items 
-    WHERE length(text_value) > 100
-    ORDER BY embedding <-> '{embedding}'
+    SELECT i.text_value, d.source, d.name, d.author
+    FROM items i
+    JOIN documents d ON i.doc_id = d.id
+    ORDER BY i.embedding <=> '{embedding}'
     LIMIT 20;
-                                                """)).fetchall()
+""")).fetchall()
+        
         
         formatted_text = ""
         for result in results:
-            formatted_text += f'''Author: {result[4]}, 
-            Name: {result[3]}, 
-            Type of Source: {result[1]}, 
-            Text: {result[0]}\n\n\n'''
+            formatted_text += f'''    
+    Author: {result[3]}, 
+    Name: {result[2]}, 
+    Type of Source: {result[1]}, 
+Text: {result[0]}\n'''
 
-
+        print(formatted_text)
+        
         return formatted_text
     
     except DBAPIError as error:
