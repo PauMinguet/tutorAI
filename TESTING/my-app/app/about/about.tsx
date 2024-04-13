@@ -1,31 +1,11 @@
 import Link from 'next/link';
 import "../globals.css";
+import Navbar1 from "../components/navbar1";
 
 export default function About() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <nav className="bg-gray-800 p-4">
-        <div className="flex justify-between items-center">
-          <div className="text-2xl font-extrabold">tutorAI</div>
-          <div className="flex space-x-20 mr-16 font-ubuntu">
-            <Link legacyBehavior href="/home">
-              <a className="text-md">Home</a>
-            </Link>
-            <Link legacyBehavior href="/upload">
-              <a className="text-md">Upload</a>
-            </Link>
-            <Link legacyBehavior href="/chat">
-              <a className="text-md">Chat</a>
-            </Link>
-            <Link legacyBehavior href="/settings">
-              <a className="text-md">Settings</a>
-            </Link>
-            <Link legacyBehavior href="/about">
-              <a className="text-md">About</a>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar1 />
       <main className="flex flex-col items-center justify-center py-2 text-center flex-grow">
         <div className="z-10 max-w-5xl w-full p-6 bg-gray-800 rounded-xl shadow-md space-y-4">
           <h1 className="text-6xl font-extrabold text-purple-600 mb-4">
