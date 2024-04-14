@@ -34,7 +34,7 @@ def searchVectorDB(text):
     try:
         with db.engine.begin() as connection:
             results = connection.execute(sqlalchemy.text(f"""
-    SELECT i.text_value, d.source, d.name, d.author
+    SELECT i.text_value, d.source, d.name, d.author, d.link
     FROM items i
     JOIN documents d ON i.doc_id = d.id
     ORDER BY i.embedding <=> '{embedding}'
@@ -48,6 +48,7 @@ def searchVectorDB(text):
     Author: {result[3]}, 
     Name: {result[2]}, 
     Type of Source: {result[1]}, 
+    Link: {result[4]}, 
 Text: {result[0]}\n'''
 
         print(formatted_text)

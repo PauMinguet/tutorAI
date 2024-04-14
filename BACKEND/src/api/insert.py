@@ -26,7 +26,9 @@ model_id = "intfloat/e5-small-v2"
 api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_id}"
 headers = {"Authorization": f"Bearer {os.environ.get('HUGGINGFACE_API_TOKEN')}"}
 
-def query(texts):
+def query(texts, name, author, source):
+        for i in range(len(texts)):
+            texts[i] = f" {name}, {author}, {source}, {texts[i]}"
         response = requests.post(api_url, headers=headers, json={"inputs": texts, "options":{"wait_for_model":True}})
         return response.json()
 
@@ -157,7 +159,7 @@ def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
         chunks = chunks[i:i+100]
         print(str(i) + " - " + str(i+100))
 
-        embeddings = query(chunks)
+        embeddings = query(chunks, name, author, source)
         
         try:
             with db.engine.begin() as connection:
