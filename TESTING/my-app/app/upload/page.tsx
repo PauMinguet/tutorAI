@@ -1,10 +1,10 @@
-import UploadComponent from "./upload";
+import Upload from "./upload";
 
 
 export default function Home() {
     return (
         <main>
-            <UploadComponent />
+            <Upload />
         </main>
     )
 }

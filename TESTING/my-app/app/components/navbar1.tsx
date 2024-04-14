@@ -13,7 +13,7 @@ export default function App() {
   return (
     <Navbar shouldHideOnScroll className="bg-gray-800 p-1">
       <NavbarBrand>
-        <Link href="/home">
+        <Link href="/">
           <p className="font-bold text-3xl text-inherit">tutorAI</p>
         </Link>
       </NavbarBrand>

@@ -8,12 +8,12 @@ export default async function Home() {
   console.log(userId);
 
   const user = await currentUser();
-
+  console.log(user);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <NavBar1/>
-      <main className="flex flex-col items-center justify-center py-2 text-center flex-grow">
+      <main className="flex flex-col items-center mt- 10 py-2 text-center flex-grow">
         <div className="z-10 max-w-5xl w-full p-6 bg-gray-800 rounded-xl shadow-md space-y-4">
           <h1 className="text-6xl font-extrabold text-purple-600 mb-4">
             HOME

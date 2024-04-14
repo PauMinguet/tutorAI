@@ -1,11 +1,22 @@
 import Link from 'next/link';
 import "./globals.css";
-import LoginBar from './components/loginnav';
+import NavBar1 from './components/navbar1';
+import { auth, currentUser } from '@clerk/nextjs';
 
-export default function Landing() {
+export default async function Landing() {
+
+  const {userId} = auth();
+  console.log(userId);
+
+  const user = await currentUser();
+  if (user) {
+  }
+
+
+
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <LoginBar />
+      <NavBar1 />
       <main className="flex flex-col items-center justify-center py-2 text-center flex-grow">
         <div className="z-10 max-w-5xl w-full p-6 bg-gray-800 rounded-xl shadow-md space-y-4">
           <h1 className="text-6xl font-extrabold text-purple-600 mb-4">

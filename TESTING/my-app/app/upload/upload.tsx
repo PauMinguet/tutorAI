@@ -1,109 +1,43 @@
-"use client";
-import { useDropzone } from "react-dropzone";
-import { useState } from "react";
-import Link from "next/link";
-import axios from "axios";
-
-import "../globals.css";
+import React from "react";
+import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import NavBar1 from "../components/navbar1";
 
-export default function UploadComponent() {
-  const [name, setName] = useState("");
-  const [author, setAuthor] = useState("");
-  const [sourceType, setSourceType] = useState("");
-  const [files, setFiles] = useState([]);
-
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: 'application/pdf',
-    onDrop: (acceptedFiles) => {
-      setFiles(acceptedFiles);
-    },
-  });
-
-  const handleUpload = async () => {
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('file', file);
-    });
-
-    try {
-      const response = await axios.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+export default function Upload() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <NavBar1/>
-      <div className="min-h-screen bg-gray-900 text-white flex flex-col p-10 w-3/5 mx-auto">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          className="p-2 mb-4 bg-gray-800 text-white rounded"
-        />
-        <input
-          type="text"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          placeholder="Author"
-          className="p-2 mb-4 bg-gray-800 text-white rounded"
-        />
-        <select
-          value={sourceType}
-          onChange={(e) => setSourceType(e.target.value)}
-          className="p-2 mb-4 bg-gray-800 text-white rounded"
-        >
-          <option value="">Select source type</option>
-          <option value="book">Book</option>
-          <option value="article">Article</option>
-          <option value="website">Website</option>
-        </select>
-        <div className="flex items-center justify-center mx-auto w-40 bg-gray-800 text-white rounded cursor-pointer mb-10 mt-5">
-          <div
-            {...getRootProps()}
-            className="p-5 bg-white rounded shadow-lg text-center h-40 w-40 flex flex-col items-center justify-center cursor-pointer"
-          >
-            <input {...getInputProps()} />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a4 4 0 01-4-4V7a4 4 0 014-4h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V17a4 4 0 01-4 4z"
-              />
-            </svg>
-            <p className="mt-1 text-sm text-gray-600">
-              <button className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition duration-150 ease-in-out">
-                Upload a file
-              </button>
-              or drag and drop
-            </p>
-            <p className="mt-1 text-xs text-center text-gray-500">
-              PNG, JPG, GIF up to 10MB
-            </p>
-            
-          </div>
-        </div>
-
-        <button className="mx-auto w-60 p-2 bg-blue-500 text-white rounded active:bg-blue-700">
-          Upload
-        </button>
+    <>
+      <NavBar1 />
+      <div className="flex w-full flex-col">
+        <Tabs aria-label="Options">
+          <Tab key="photos" title="Photos">
+            <Card>
+              <CardBody>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </CardBody>
+            </Card>
+          </Tab>
+          <Tab key="music" title="Music">
+            <Card>
+              <CardBody>
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+                dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur.
+              </CardBody>
+            </Card>
+          </Tab>
+          <Tab key="videos" title="Videos">
+            <Card>
+              <CardBody>
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                qui officia deserunt mollit anim id est laborum.
+              </CardBody>
+            </Card>
+          </Tab>
+        </Tabs>
       </div>
-    </div>
+    </>
   );
 }
