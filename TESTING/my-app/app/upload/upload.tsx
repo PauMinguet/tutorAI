@@ -3,6 +3,7 @@ import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import NavBar1 from "../components/navbar1";
 
 export default function Upload() {
+
   return (
     <>
       <NavBar1 />

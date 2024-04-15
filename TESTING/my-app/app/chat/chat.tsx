@@ -26,8 +26,13 @@ export default function Chat() {
     console.log(message);
     if (message === "") return;
     try {
-      const res = await axios.post("https://tutorai-k0k2.onrender.com/");
+      const res = await axios.get("https://tutorai-k0k2.onrender.com/", {
+        params: {
+          message: message
+        }
+      });
       setResponse(res.data.response);
+      console.log(res.data.response);
     } catch (error) {
       console.error(error);
     }
@@ -59,15 +64,12 @@ export default function Chat() {
       <Navbar1 />
       <div className="flex flex-col items-center py-2 text-center flex-grow mt-10">
         <div className="mb-10">
-        <div className="w-full max-w-[260px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
-            <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
-              <ListboxItem key="new">New file</ListboxItem>
-              <ListboxItem key="copy">Copy link</ListboxItem>
-              <ListboxItem key="edit">Edit file</ListboxItem>
-              <ListboxItem key="delete" className="text-danger" color="danger">
-                Delete file
-              </ListboxItem>
-            </Listbox>
+          <div className="w-full">
+            <Tabs aria-label="Options" color="warning" size="lg" align="center">
+              {tabs.map((tab) => (
+                <Tab key={tab.id} title={tab.label}></Tab>
+              ))}
+            </Tabs>
           </div>
         </div>
         <div className="z-10 max-w-5xl w-full p-6 bg-gray-800 rounded-xl shadow-md space-y-4">
@@ -78,18 +80,20 @@ export default function Chat() {
                 label=""
                 placeholder="Ask tutorAI!"
                 height="300"
-                onChange={(event) => setMessage(event.target.value)}
+                onValueChange={(value) => setMessage(value)}
               />
-              <Button size="md" onPress={handleSend(message)}>
+              <Button
+                size="md"
+                className="ml-4 bg-rose-500"
+                color="success"
+                onClick={() => handleSend(message)}
+              >
                 Send
               </Button>
             </div>
           </div>
           <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
-            <Textarea
-              label="Description"
-              placeholder="Enter your description (Default autosize)"
-            />
+            <Textarea label="Description" placeholder={response} />
           </div>
         </div>
       </div>

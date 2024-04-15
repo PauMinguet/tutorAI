@@ -59,4 +59,3 @@ Text: {result[0]}\n'''
      
         print(f"Error returned: <<<{error}>>>")
     
-
