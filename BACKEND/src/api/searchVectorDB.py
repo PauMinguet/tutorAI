@@ -41,18 +41,21 @@ def searchVectorDB(text):
     LIMIT 20;
 """)).fetchall()
         
-        
         formatted_text = ""
         for result in results:
-            formatted_text += f'''    
-    Author: {result[3]}, 
-    Name: {result[2]}, 
-    Type of Source: {result[1]}, 
-    Link: {result[4]}, 
-Text: {result[0]}\n'''
+            if result[3] is not None:
+                formatted_text += f"Author: {result[3]},\n"
+            if result[2] is not None:
+                formatted_text += f"Name: {result[2]},\n"
+            if result[1] is not None:
+                formatted_text += f"Type of Source: {result[1]},\n"
+            if result[4] is not None:
+                formatted_text += f"Link: {result[4]},\n"
+            if result[0] is not None:
+                formatted_text += f"Text: {result[0]}\n"
 
         print(formatted_text)
-        
+
         return formatted_text
     
     except DBAPIError as error:

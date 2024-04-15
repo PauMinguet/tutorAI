@@ -24,7 +24,7 @@ import sqlalchemy
 from fastapi.middleware.cors import CORSMiddleware
 
 
-origins = ["http://localhost:3000/"]  # Replace with the URL of your Next.js app
+origins = ["http://localhost:3000"]  # Replace with the URL of your Next.js app
 
 
 description = """
