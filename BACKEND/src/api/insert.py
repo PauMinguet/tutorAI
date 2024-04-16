@@ -141,6 +141,8 @@ def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
     chunks = break_into_chunks(text)
 
     chunks = [chunk for chunk in chunks if len(chunk) > 100]
+    
+    chunks = filter_chunks(chunks)
 
     try:
         with db.engine.begin() as connection:
@@ -173,6 +175,24 @@ def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
         except DBAPIError as error:
         
             print(f"Error returned: <<<{error}>>>")
+
+
+def filter_chunks(chunks, min_avg_word_length=4, max_avg_word_length=8):
+    filtered_chunks = []
+    
+    for chunk in chunks:
+        # Split the chunk into words
+        words = chunk.split()
+        
+        # Calculate the average word length
+        avg_word_length = sum(len(word) for word in words) / len(words)
+        
+        # Check if the average word length is within the allowed range
+        if min_avg_word_length <= avg_word_length <= max_avg_word_length:
+            filtered_chunks.append(chunk)
+    
+    return filtered_chunks
+
 
 
 def get_video_title(video_url):

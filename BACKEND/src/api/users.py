@@ -22,20 +22,20 @@ class User(BaseModel):
     firstname: str
     lastname: str
     email: str
-    userId: str
+    userid: str
 
 @router.post("/create")
 def update_times(user: User):
     firstname = user.firstname
     lastname = user.lastname
     email = user.email
-    userId = user.userId
+    userid = user.userid
 
     try:
         with db.engine.begin() as connection:
             userId = connection.execute(sqlalchemy.text(f"""
-INSERT INTO users (firstname, lastname, email, userId), VALUES ('{firstname}', '{lastname}', '{email}', '{userId}');
-""")).fetchall()
+INSERT INTO users (firstname, lastname, email, userid) VALUES ('{firstname}', '{lastname}', '{email}', '{userid}');
+"""))
         
         
 
