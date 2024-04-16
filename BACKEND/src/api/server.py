@@ -1,25 +1,11 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import searchVectorDB, insert, claude, viewDocuments, classes
+from src.api import searchVectorDB, insert, claude, viewDocuments, classes, users
 import logging
 from .. import database as db
 import sqlalchemy
 import json
-
-
-
-
-from fastapi import FastAPI, exceptions
-from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-#from src.api import audit, carts, catalog, bottler, barrels, admin
-import json
-import logging
-import sys
-from .. import database as db
-import sqlalchemy
-
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -53,6 +39,7 @@ app.add_middleware(
 
 
 
+app.include_router(users.router)
 app.include_router(insert.router)
 app.include_router(searchVectorDB.router)
 app.include_router(claude.router)

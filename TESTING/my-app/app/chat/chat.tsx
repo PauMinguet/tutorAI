@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Navbar1 from "../components/navbar1";
 import "../globals.css";
+import { Spinner } from "@nextui-org/react";
+
 import {
   Card,
   CardHeader,
@@ -21,20 +22,27 @@ import {
 export default function Chat() {
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("");
+  const [selected, setSelected] = useState("CSC 480");
+  const [textHeight, setTextHeight] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = async (message: string) => {
     console.log(message);
     if (message === "") return;
     try {
-      const res = await axios.get("https://tutorai-k0k2.onrender.com/", {
-        params: {
-          message: message
-        }
-      });
-      setResponse(res.data.response);
-      console.log(res.data.response);
+      setIsLoading(true);
+      const encodedMessage = encodeURIComponent(message);
+      const res = await fetch(
+        "https://tutorai-k0k2.onrender.com/query/" + encodedMessage
+      );
+      const data = await res.json();
+      console.log(data);
+      setResponse(data);
+      setTextHeight(data.split("\n").length);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,10 +70,10 @@ export default function Chat() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <Navbar1 />
-      <div className="flex flex-col items-center py-2 text-center flex-grow mt-10">
+      <div className="flex flex-col items-center py-2 text-center flex-grow mt-8">
         <div className="mb-10">
           <div className="w-full">
-            <Tabs aria-label="Options" color="warning" size="lg" align="center">
+            <Tabs aria-label="Options" color="warning" size="lg">
               {tabs.map((tab) => (
                 <Tab key={tab.id} title={tab.label}></Tab>
               ))}
@@ -92,8 +100,18 @@ export default function Chat() {
               </Button>
             </div>
           </div>
-          <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
-            <Textarea label="Description" placeholder={response} />
+          <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 mt-5 text-left">
+            {isLoading ? (
+              <div className="mt-10 flex justify-center items-center">
+                <Spinner />
+              </div>
+            ) : null}
+            {response.split("\n").map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </div>

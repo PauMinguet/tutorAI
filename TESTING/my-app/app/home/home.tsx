@@ -73,8 +73,8 @@ export default function Home() {
                   title={<span className="text-white">{c}</span>}
                 >
                   {docs[c].map((d, j) => (
-                    <div key={j} className="flex items-center mt-4">
-                      <Card className="flex-grow">
+                    <div key={j} className="flex items-center mt-4 text-small">
+                      <Card className="flex-grow h-11">
                         <CardBody>
                           <p>{d}</p>
                         </CardBody>
@@ -94,11 +94,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      <footer className="bg-gray-800 p-4 text-center text-sm">
-        <p>&copy; 2024 tutorAI. All rights reserved.</p>
-        <p>123 Main St, Anytown, USA</p>
-        <p>Email: info@tutorai.com</p>
-      </footer>
     </div>
   );
 }
