@@ -17,13 +17,16 @@ router = APIRouter(
 
 class Input(BaseModel):
     name: str
+    userId: str
 
 @router.post("/create")
 def createClass(input: Input):
     name = input.name
+    userid = input.userId
+    
     try:
         with db.engine.begin() as connection:
-            connection.execute(sqlalchemy.text("""insert into classes (name) values (:name)"""), {"name": name})
+            connection.execute(sqlalchemy.text("""insert into classes (name, user_id) values (:name, :userid)"""), {"name": name, "userid": userid})
         
         return 'Class created!'
     
@@ -35,15 +38,17 @@ def createClass(input: Input):
 class InputAdd(BaseModel):
     docId: int
     classId: int
+    userId: str
 
 @router.post("/add")
 def addDocToClass(input: InputAdd):
     docId = str(input.docId)
     classId = str(input.classId)
+    userId = input.userId
     
     try:
         with db.engine.begin() as connection:
-            connection.execute(sqlalchemy.text("""insert into docToClass (docId, classId) values (:docId, :classId)"""), {"docId": docId, "classId": classId})
+            connection.execute(sqlalchemy.text("""insert into doctoclass (doc_id, class_id, user_id) values (:docId, :classId, :userId)"""), {"docId": docId, "classId": classId, "userId": userId})
         
         return 'Document added to Class!'
     

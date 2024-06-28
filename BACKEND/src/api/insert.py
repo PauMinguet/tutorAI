@@ -11,7 +11,6 @@ from pydantic import BaseModel
 import requests
 import re
 import youtube_transcript_api
-from pytube import YouTube
 #from docx import Document
 
 router = APIRouter(
@@ -64,8 +63,13 @@ def update_times(input: Input):
 
     for line in transcript:
         text += line['text'] + " "
+    print(len(text))
+    
+    print(text)
+    
+    print(input.source)
 
-    insertChunks(text, "YT", author=channel, name=title, link=example_url, source=input.source)
+    insertChunks(text, author=channel, name=title, link=example_url, source=input.source)
 
     return "YouTube video transcript parsed and saved to database"
 
