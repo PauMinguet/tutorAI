@@ -27,9 +27,11 @@ def query(texts):
 @router.get("/{text}")
 def searchVectorDB(text):
 
-    print(text)
-    
+    print(text.encode('utf-8'))
+        
     embedding = query([text])[0]
+        
+    print("embedding worked".encode('utf-8'))
         
     try:
         with db.engine.begin() as connection:
@@ -39,7 +41,9 @@ def searchVectorDB(text):
     JOIN documents d ON i.doc_id = d.id
     ORDER BY i.embedding <=> '{embedding}'
     LIMIT 20;
-""")).fetchall()
+    """)).fetchall()
+            
+        print(str(results).encode('utf-8'))
         
         formatted_text = ""
         for result in results:
@@ -53,12 +57,12 @@ def searchVectorDB(text):
                 formatted_text += f"Link: {result[4]},\n"
             if result[0] is not None:
                 formatted_text += f"Text: {result[0]}\n"
-
-        print(formatted_text)
-
+    
+        print(formatted_text.encode('utf-8'))
+    
         return formatted_text
     
     except DBAPIError as error:
      
-        print(f"Error returned: <<<{error}>>>")
+        print(f"Error returned: <<<{error}>>>".encode('utf-8'))
     
