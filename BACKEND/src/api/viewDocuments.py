@@ -22,9 +22,9 @@ def searchVectorDB():
     
     try:
         with db.engine.begin() as connection:
-            results = connection.execute(sqlalchemy.text("""select name, source, author, link from documents order by created_at desc""")).fetchall()
+            results = connection.execute(sqlalchemy.text("""select id, name, source, author, link from documents order by created_at desc""")).fetchall()
 
-        results = [dict(zip(["name", "source", "author", "link"], result)) for result in results]
+        results = [dict(zip(["id", "name", "source", "author", "link"], result)) for result in results]
 
         
         return {"results": results}

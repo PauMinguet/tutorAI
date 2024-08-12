@@ -15,7 +15,7 @@ router = APIRouter(
     #dependencies=[Depends(auth.get_api_key)],
 )
 
-model_id = "intfloat/e5-small-v2"
+model_id = "intfloat/multilingual-e5-small"
 api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{model_id}"
 headers = {"Authorization": f"Bearer {os.environ.get('HUGGINGFACE_API_TOKEN')}"}
 
@@ -30,12 +30,13 @@ def searchVectorDB(text):
     print(text)
     
     embedding = query([text])[0]
+
         
     try:
         with db.engine.begin() as connection:
             results = connection.execute(sqlalchemy.text(f"""
     SELECT i.text_value, d.source, d.name, d.author, d.link
-    FROM items i
+    FROM itemsw i
     JOIN documents d ON i.doc_id = d.id
     ORDER BY i.embedding <=> '{embedding}'
     LIMIT 20;

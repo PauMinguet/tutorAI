@@ -22,7 +22,7 @@ def query(query):
     ollama_url = "http://localhost:11434/api/generate"
     ollama_payload = {
         "model": "claude",  # Assuming you have a Claude model in Ollama
-        "prompt": f"System: You are a private tutor, called tutorAI, and your goal is to use the sources provided (pieces of textbook, slides, youtube video transcripts, etc), to answer the question best. Feel free to quote them and cite them by their author or name, and, if necessary, refer the student to the source for additional information.\n\nHuman: Answer this query: {query} with the following context: {context}\n\nAssistant:",
+        "prompt": f"System: You are a private AI for a law company, and your goal is to use the sources provided (pieces of textbook, slides, youtube video transcripts, etc), to answer the question best. Feel free to quote them and cite them by their author or name, and, if necessary, refer the lawyer to the source for additional information.\n\nHuman: Answer this query: ({query}) with the following context: {context}\n\nAssistant:",
         "stream": False
     }
 
