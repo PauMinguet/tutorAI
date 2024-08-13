@@ -39,7 +39,7 @@ def searchVectorDB(text):
     FROM itemsw i
     JOIN documents d ON i.doc_id = d.id
     ORDER BY i.embedding <=> '{embedding}'
-    LIMIT 20;
+    LIMIT 40;
 """)).fetchall()
         
         formatted_text = ""
