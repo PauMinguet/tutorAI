@@ -1,9 +1,8 @@
 import easyocr
-import fitz  # PyMuPDF
+import fitz
 import os
 import tempfile
 import requests
-import json
 import re
 
 def extract_and_format_text_from_pdf(pdf_path):
@@ -70,19 +69,20 @@ def pre_format_text(text):
 def refine_text_with_llama(text):
     url = "http://localhost:11434/api/generate"
     
-    prompt = f""" Format this information in Spanish in this format (The names will be in this order: Last1, Last2, First):
-    
-    (titulo)
-    
+    prompt = f"""Formatea esta información en español en el siguiente formato:
+- Los nombres estarán en este orden: Apellido1, Apellido2, Nombre. Asegurate de que los nombres y apellidos estén separados por una coma.:
+- La fecha de nacimiento estará en el formato DD/MM/AAAA:
+- Adhiérete al siguiente formato, no omitas ningun campo:
+        
     Nombre Completo:
     Sexo:
     Fecha de Nacimiento:
-    Dirección:
+    Domicilio:
     Clave de Elector:
     CURP:
     Sección Electoral:
+    Año de Registro:
     Vigencia:
-    CNE:
     IDMEX:
         
     {text}
