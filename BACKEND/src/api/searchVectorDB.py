@@ -36,7 +36,7 @@ def searchVectorDB(text):
         with db.engine.begin() as connection:
             results = connection.execute(sqlalchemy.text(f"""
     SELECT i.text_value, d.source, d.name, d.author, d.link
-    FROM itemsw i
+    FROM items i
     JOIN documents d ON i.doc_id = d.id
     ORDER BY i.embedding <=> '{embedding}'
     LIMIT 40;
@@ -45,15 +45,15 @@ def searchVectorDB(text):
         formatted_text = ""
         for result in results:
             if result[3] is not None:
-                formatted_text += f"Author: {result[3]},\n"
+                formatted_text += f"Autor: {result[3]},\n"
             if result[2] is not None:
-                formatted_text += f"Name: {result[2]},\n"
+                formatted_text += f"Nombre: {result[2]},\n"
             if result[1] is not None:
-                formatted_text += f"Type of Source: {result[1]},\n"
-            if result[4] is not None:
-                formatted_text += f"Link: {result[4]},\n"
+                formatted_text += f"Tipo de Fuente: {result[1]},\n"
+            # if result[4] is not None:
+            #     formatted_text += f"Link: {result[4]},\n"
             if result[0] is not None:
-                formatted_text += f"Text: {result[0]}\n"
+                formatted_text += f"Texto: {result[0]}\n"
 
         print(formatted_text)
 

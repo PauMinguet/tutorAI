@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-import requests
-from fastapi import APIRouter, Depends
+import anthropic
+from fastapi import APIRouter, HTTPException
 from src.api import searchVectorDB
 from src import database as db
 import sqlalchemy
@@ -11,30 +11,39 @@ router = APIRouter(
     tags=["query"],
 )
 
-@router.get("/{query}")
-def query(query):
+# Load environment variables
+load_dotenv()
 
+# Initialize Anthropic client
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+@router.get("/{query}")
+def query(query: str):
     print(query)
 
     context = searchVectorDB.searchVectorDB(query)
 
-    # Ollama API request
-    ollama_url = "http://localhost:11434/api/generate"
-    ollama_payload = {
-        "model": "claude",  # Assuming you have a Claude model in Ollama
-        "prompt": f"System: You are a private AI for a law company, and your goal is to use the sources provided (pieces of textbook, slides, youtube video transcripts, etc), to answer the question best. Feel free to quote them and cite them by their author or name, and, if necessary, refer the lawyer to the source for additional information.\n\nHuman: Answer this query: ({query}) with the following context: {context}\n\nAssistant:",
-        "stream": False
-    }
+    system_prompt = """Eres una IA privada para una empresa de abogados, y tu objetivo es utilizar las fuentes proporcionadas (fragmentos de libros de texto, diapositivas, transcripciones de videos de YouTube, etc.) para responder la pregunta de la mejor manera posible. Siéntete libre de citarlas y mencionar a sus autores o nombres, y, si es necesario, remite al abogado a la fuente para obtener información adicional."""
 
-    response = requests.post(ollama_url, json=ollama_payload)
-    
-    if response.status_code == 200:
-        answer = response.json()['response']
-    else:
-        answer = f"Error: Unable to get response from Ollama. Status code: {response.status_code}"
+    try:
+        response = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=1000,
+            temperature=0.7,
+            system=system_prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Responde a esta consulta: ({query}) con el siguiente contexto: {context}"
+                }
+            ]
+        )
+        answer = response.content[0].text
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error calling Anthropic API: {str(e)}")
 
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("insert into queries (query, context, answer) values (:query, :context, :answer);")
-            , {"query": query, "context": context, "answer": answer})
+        connection.execute(sqlalchemy.text("insert into queries (query, context, answer) values (:query, :context, :answer);"),
+                           {"query": query, "context": context, "answer": answer})
 
     return answer

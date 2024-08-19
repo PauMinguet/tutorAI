@@ -1,7 +1,7 @@
 import os
 import unicodedata
 import PyPDF2
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 #from src.api import auth
 import sqlalchemy
 from src import database as db
@@ -81,6 +81,12 @@ class InputFile(BaseModel):
     name: str
 
 
+class InputFile(BaseModel):
+    filename: str
+    startpage: int
+    endpage: int
+    name: str
+
 @router.post("/PDF")
 def update_times(input: InputFile):
     filename = input.filename
@@ -88,31 +94,42 @@ def update_times(input: InputFile):
     endpage = input.endpage
     name = input.name
 
-    current_path = os.getcwd()
-    print(current_path)
-    filepath = current_path + f"\\assets\\{filename}"
+    # Get the directory of the current file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Navigate to the project root (assuming the current file is in src/api)
+    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+    
+    # Construct the path to the assets folder
+    assets_dir = os.path.join(project_root, 'assets')
+    
+    # Full path to the PDF file
+    filepath = os.path.join(assets_dir, filename)
 
-    filepath = f"/assets/{filename}"
+    print(f"Attempting to open file: {filepath}")
 
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail=f"File not found: {filepath}")
 
-    filepath = filepath.replace("\\", "/")
+    if not filename.endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Invalid file format. Please upload a PDF file.")
 
-    if filename.endswith('.pdf'):
-        pdf_file = open(filepath, 'rb')
-        pdf_reader = PyPDF2.PdfReader(pdf_file)
-        num_pages = len(pdf_reader.pages)
-        text = ''
-        endpage = int(endpage) if int(endpage) < num_pages else num_pages
-        for page_num in range(int(startpage), endpage):
-            page = pdf_reader.pages[page_num]
-            text += page.extract_text()
-        pdf_file.close()
-    else:
-        return "Invalid file format. Please upload a PDF file."
+    try:
+        with open(filepath, 'rb') as pdf_file:
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            num_pages = len(pdf_reader.pages)
+            text = ''
+            endpage = min(int(endpage), num_pages)
+            for page_num in range(int(startpage), endpage):
+                page = pdf_reader.pages[page_num]
+                text += page.extract_text()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading PDF: {str(e)}")
 
-    insertChunks(text=text, name=name, link=filename)
+    # Call your insertChunks function here
+    insertChunks(text=text, name=name, link=filename, source="PDF")
 
-    return "PDF parsed and saved to database"
+    return {"message": "PDF parsed and saved to database"}
 
 
 
@@ -200,11 +217,11 @@ def filter_chunks(chunks, min_avg_word_length=4, max_avg_word_length=8):
 
 
 def get_video_title(video_url):
-    try:
-        yt = YouTube(video_url)
-        return yt.title
-    except Exception as e:
-        print("Error:", e)
+    # try:
+    #     yt = YouTube(video_url)
+    #     return yt.title
+    # except Exception as e:
+    #     print("Error:", e)
         return None
     
 
