@@ -13,3 +13,5 @@ pytube
 PyPDF2
 clerk
 python-multipart
+easyocr
+pymupdf
