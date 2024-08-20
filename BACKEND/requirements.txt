@@ -12,3 +12,4 @@ youtube_transcript_api
 pytube
 PyPDF2
 clerk
+python-multipart

@@ -12,6 +12,8 @@ def database_connection_url():
     
     return db_url
 
+
+
 engine = create_engine(database_connection_url(), pool_pre_ping=True)
 
 # Test the connection
