@@ -1,7 +1,9 @@
 import os
 import unicodedata
 import PyPDF2
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, File, UploadFile, Form
+from typing import List
+
 #from src.api import auth
 import sqlalchemy
 from src import database as db
@@ -11,6 +13,8 @@ from pydantic import BaseModel
 import requests
 import re
 import youtube_transcript_api
+from io import BytesIO
+
 #from docx import Document
 
 router = APIRouter(
@@ -152,6 +156,35 @@ def update_times(input: InputText):
 
     return "Document parsed and saved to database"
 
+
+@router.post("/multiple_pdfs")
+async def upload_multiple_pdfs(files: List[UploadFile] = File(...)):
+    results = []
+    for file in files:
+        if not file.filename.lower().endswith('.pdf'):
+            results.append({"filename": file.filename, "status": "error", "message": "Not a PDF file"})
+            continue
+
+        try:
+            content = await file.read()
+            pdf_file = BytesIO(content)
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+
+            name = os.path.splitext(file.filename)[0]  # Remove .pdf extension
+            source = "PLD"
+            author = "MX GVMT"
+
+            insertChunks(text=text, name=name, source=source, author=author, link=file.filename)
+            
+            results.append({"filename": file.filename, "status": "success", "message": "PDF processed and saved to database"})
+        except Exception as e:
+            results.append({"filename": file.filename, "status": "error", "message": str(e)})
+
+    return results
 
 
 

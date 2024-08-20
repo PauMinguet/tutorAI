@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from src.api import searchVectorDB
 from src import database as db
 import sqlalchemy
+import asyncio
 
 router = APIRouter(
     prefix="/query",
@@ -24,9 +25,7 @@ async def query(query: str):
 
     context = searchVectorDB.searchVectorDB(query)
 
-    system_prompt = """Eres una IA privada para una empresa de abogados, y tu objetivo es utilizar las fuentes proporcionadas (Documentos del Gobierno de Mexico sobre PLD) para responder la pregunta de la mejor manera posible. Siéntete libre de citarlas y mencionar a sus autores o nombres, y, si es necesario, remite al abogado a la fuente para obtener información adicional."""
-
-
+    system_prompt = """Eres una IA privada para una empresa de abogados, y tu objetivo es utilizar las fuentes proporcionadas (fragmentos de libros de texto, diapositivas, transcripciones de videos de YouTube, etc.) para responder la pregunta de la mejor manera posible. Siéntete libre de citarlas y mencionar a sus autores o nombres, y, si es necesario, remite al abogado a la fuente para obtener información adicional."""
 
     async def generate():
         try:
@@ -43,10 +42,11 @@ async def query(query: str):
                 ]
             ) as stream:
                 answer = ""
-                async for chunk in stream:
+                for chunk in stream:
                     if chunk.type == "content_block_delta":
-                        answer += chunk.delta.text
-                        yield chunk.delta.text
+                        content = chunk.delta.text
+                        answer += content
+                        yield content
 
             # Store the complete answer in the database
             with db.engine.begin() as connection:
