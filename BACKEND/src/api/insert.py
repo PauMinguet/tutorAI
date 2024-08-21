@@ -1,7 +1,7 @@
 import os
 import unicodedata
 import PyPDF2
-from fastapi import APIRouter, File, UploadFile, Form
+from fastapi import APIRouter, File, UploadFile, Form, HTTPException
 from typing import List
 
 #from src.api import auth
@@ -78,60 +78,25 @@ def update_times(input: Input):
     return "YouTube video transcript parsed and saved to database"
 
 
-class InputFile(BaseModel):
-    filename: str
-    startpage: int
-    endpage: int
-    name: str
-
-
-class InputFile(BaseModel):
-    filename: str
-    startpage: int
-    endpage: int
-    name: str
-
 @router.post("/PDF")
-def update_times(input: InputFile):
-    filename = input.filename
-    startpage = input.startpage
-    endpage = input.endpage
-    name = input.name
-
-    # Get the directory of the current file
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Navigate to the project root (assuming the current file is in src/api)
-    project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    
-    # Construct the path to the assets folder
-    assets_dir = os.path.join(project_root, 'assets')
-    
-    # Full path to the PDF file
-    filepath = os.path.join(assets_dir, filename)
-
-    print(f"Attempting to open file: {filepath}")
-
-    if not os.path.exists(filepath):
-        raise HTTPException(status_code=404, detail=f"File not found: {filepath}")
-
-    if not filename.endswith('.pdf'):
+async def update_times(name: str = Form(...), file: UploadFile = File(...)):
+    if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="Invalid file format. Please upload a PDF file.")
 
     try:
-        with open(filepath, 'rb') as pdf_file:
-            pdf_reader = PyPDF2.PdfReader(pdf_file)
-            num_pages = len(pdf_reader.pages)
-            text = ''
-            endpage = min(int(endpage), num_pages)
-            for page_num in range(int(startpage), endpage):
-                page = pdf_reader.pages[page_num]
-                text += page.extract_text()
+        contents = await file.read()
+        pdf_file = BytesIO(contents)
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        num_pages = len(pdf_reader.pages)
+        text = ''
+        for page_num in range(num_pages):
+            page = pdf_reader.pages[page_num]
+            text += page.extract_text()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reading PDF: {str(e)}")
 
     # Call your insertChunks function here
-    insertChunks(text=text, name=name, link=filename, source="PDF")
+    insertChunks(text=text, name=name, link=file.filename, source="PDF")
 
     return {"message": "PDF parsed and saved to database"}
 
