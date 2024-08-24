@@ -117,7 +117,7 @@ def update_times(input: InputText):
     source = input.source
     author = input.author
     
-    insertChunks(text, source=source, name=name, author=author, link='NULL')
+    insertChunks(text, source=source, name=name, author=author, link='NULL', doc_type="private")
 
     return "Document parsed and saved to database"
 
@@ -155,7 +155,7 @@ async def upload_multiple_pdfs(files: List[UploadFile] = File(...)):
 
 
 
-def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
+def insertChunks(text, source, name='NULL', author='NULL', link='NULL', doc_type="private"):
 
     chunks = break_into_chunks(text)
 
@@ -165,8 +165,8 @@ def insertChunks(text, source, name='NULL', author='NULL', link='NULL'):
 
     try:
         with db.engine.begin() as connection:
-            docId = connection.execute(sqlalchemy.text("insert into documents (name, source, author, link, num_chunks) values (:name, :source, :author, :link, :numchunks) returning id;")
-                , {"text": text, "source": source, "name": name, "author": author, "link": link, "numchunks": len(chunks)}).first()[0]
+            docId = connection.execute(sqlalchemy.text("insert into documents (name, source, author, link, num_chunks, doc_type) values (:name, :source, :author, :link, :numchunks, :doc_type) returning id;")
+                , {"text": text, "source": source, "name": name, "author": author, "link": link, "numchunks": len(chunks), "doc_type": doc_type}).first()[0]
     except DBAPIError as error:
         
         print(f"Error returned: <<<{error}>>>")
